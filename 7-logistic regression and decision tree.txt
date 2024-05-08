@@ -1,0 +1,19 @@
+type the following steps in the terminal of the r programming
+step 1
+install.packages("party")
+step 2
+library(party)
+step 3
+print(head(readingSkills))
+step 4
+input.data<-readingSkills[c(1:105),]
+step 5
+png(file="decision_tree.png")
+step 6
+output.tree<-ctree(nativeSpeaker~age+shoeSize+score,data=input.data)
+step 7
+plot(output.tree)
+step 8
+dev.off()
+step 9
+plot(output.tree)
