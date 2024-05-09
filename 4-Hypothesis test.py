@@ -1,43 +1,36 @@
-import pandas as pd
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
-# Define the data
-data = {
-     'Product': ['Apple_Juice', 'Banana_Smoothie', 'Orange_Jam', 'Grape_Jelly', 'Kiwi_Parfait', 'Mango_Chutney', 'Pineapple_Sorbet', 'Strawberry_Yogurt', 'Blueberry_Pie', 'Cherry_Salsa'],
-    'Category': ['Apple', 'Banana', 'Orange', 'Grape', 'Kiwi', 'Mango', 'Pineapple', 'Strawberry', 'Blueberry', 'Cherry'],
-    'Sales': [1200, 1700, 2200, 1400, 2000, 1000, 1500, 1800, 1300, 1600],
-    'Cost': [600, 850, 1100, 700, 1000, 500, 750, 900, 650, 800],
-    'Profit': [600, 850, 1100, 700, 1000, 500, 750, 900, 650, 800]
-}
-# Create a DataFrame
-df = pd.DataFrame(data)
-# Display the original dataset
-print("Original Dataset:")
-print(df)
-# Step 1: Feature Scaling (Standardization and Normalization)
-numeric_columns = ['Sales', 'Cost', 'Profit']
-scaler_standardization = StandardScaler()
-scaler_normalization = MinMaxScaler()
-df_scaled_standardized= pd.DataFrame(scaler_standardization.fit_transform(df[numeric_columns]), columns=numeric_columns)
-df_scaled_normalized= pd.DataFrame(scaler_normalization.fit_transform(df[numeric_columns]), columns=numeric_columns)
-# Combine the scaled numeric features with the categorical features
-df_scaled = pd.concat([df_scaled_standardized, df.drop(numeric_columns, axis=1)], axis=1)
-# Display the dataset after feature scaling
-print("\nDataset after Feature Scaling:")
-print(df_scaled)
-# Step 2: Feature Dummification
-# Identify categorical columns
-categorical_columns = ['Product', 'Category']
-# Create a column transformer for dummification
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('categorical', OneHotEncoder(), categorical_columns)
-    ],
-    remainder='passthrough'
-)
-# Apply the column transformer to the dataset
-df_dummified = pd.DataFrame(preprocessor.fit_transform(df))
-# Display the dataset after feature dummification
-print("\nDataset after Feature Dummification:")
-print(df_dummified)
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+np.random.seed(42)
+sample1 = np.random.normal(loc=10, scale=2, size=30)
+sample2 = np.random.normal(loc=12, scale=2, size=30)
+t_statistic, p_value = stats.ttest_ind(sample1, sample2)
+alpha = 0.05
+print("Results of Two-Sample t-test:")
+print(f"t-statistic: {t_statistic}")
+print(f"p-value: {p_value}")
+print(f"Degrees of Freedom: {len(sample1) + len(sample2) - 2}")
+plt.figure(figsize=(10, 6))
+plt.hist(sample1, alpha=0.5, label='Sample 1', color='blue')
+plt.hist(sample2, alpha=0.5, label='Sample 2', color='orange')
+plt.axvline(np.mean(sample1), color='blue', linestyle='dashed', linewidth=2)
+plt.axvline(np.mean(sample2), color='orange', linestyle='dashed', linewidth=2)
+plt.title('Distributions of Sample 1 and Sample 2')
+plt.xlabel('Values')
+plt.ylabel('Frequency')
+plt.legend()
+if p_value < alpha:
+    critical_region = np.linspace(min(sample1.min(), sample2.min()), max(sample1.max(), sample2.max()), 1000)
+    plt.fill_between(critical_region, 0, 5, color='red', alpha=0.3, label='Critical Region')
+plt.text(11, 5, f'T-statistic: {t_statistic:.2f}', ha='center', va='center', color='black', backgroundcolor='white')
+plt.show()
+if p_value < alpha:
+    if np.mean(sample1) > np.mean(sample2):
+        print("Conclusion: There is significant evidence to reject the null hypothesis.")
+        print("Interpretation: The mean caffeine content of Sample 1 is significantly higher than that of Sample 2.")
+    else:
+        print("Conclusion: There is significant evidence to reject the null hypothesis.")
+        print("Interpretation: The mean caffeine content of Sample 2 is significantly higher than that of Sample 1.")
+else:
+    print("Conclusion: Fail to reject the null hypothesis.")
+    print("Interpretation: There is not enough evidence to claim a significant difference between the means.")
